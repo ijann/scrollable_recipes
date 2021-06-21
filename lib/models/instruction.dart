@@ -3,7 +3,7 @@ part of 'explore_recipe.dart';
 class Instruction {
   String imageUrl;
   String description;
-  String durationInMinutes;
+  int durationInMinutes;
 
   Instruction({this.imageUrl, this.description, this.durationInMinutes});
 
