@@ -2,10 +2,40 @@ import 'package:flutter/material.dart';
 import '../api/mock_fooderlich_service.dart';
 import '../components/components.dart';
 
-class ExploreScreen extends StatelessWidget {
-  final mockService = MockFooderlichService();
+class ExploreScreen extends StatefulWidget {
+  const ExploreScreen({Key key}) : super(key: key);
 
-  ExploreScreen({Key key}) : super(key: key);
+  @override
+  _ExploreScreenState createState() => _ExploreScreenState();
+}
+
+class _ExploreScreenState extends State<ExploreScreen> {
+  final mockService = MockFooderlichService();
+  ScrollController _controller;
+
+  @override
+  void initState() {
+    _controller = ScrollController();
+    _controller.addListener(_scrollListener);
+    super.initState();
+  }
+
+  void _scrollListener() {
+    if (_controller.offset >= _controller.position.maxScrollExtent &&
+        !_controller.position.outOfRange) {
+      print('reached the bottom');
+    }
+    if (_controller.offset <= _controller.position.minScrollExtent &&
+        !_controller.position.outOfRange) {
+      print('reached the top!');
+    }
+  }
+
+  @override
+  void dispose() {
+    _controller.removeListener(_scrollListener);
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -14,11 +44,14 @@ class ExploreScreen extends StatelessWidget {
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.done) {
           return ListView(
+            controller: _controller,
             scrollDirection: Axis.vertical,
             children: [
               TodayRecipeListView(recipes: snapshot.data.todayRecipes),
               const SizedBox(height: 16),
-              Container(height: 400, color: Colors.green),
+              FriendPostListView(
+                friendPosts: snapshot.data.friendPosts,
+              ),
             ],
           );
         } else {
